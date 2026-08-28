@@ -120,7 +120,6 @@ export function Login({ onLogin }: LoginProps) {
       </div>
 
       <footer className="login-footer">
-        <span>{t('login.footer')}</span>
         <a
           href="https://github.com/rmyndharis/OpenWA"
           target="_blank"

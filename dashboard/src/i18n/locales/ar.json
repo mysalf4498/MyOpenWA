@@ -196,7 +196,6 @@
     "connectionError": "تعذّر الاتصال بالخادم. يرجى المحاولة مرة أخرى.",
     "help": "هل تحتاج مساعدة؟",
     "viewDocs": "عرض التوثيق",
-    "footer": "صُنع بـ ❤️ بواسطة Yudhi Armyndharis ومجتمع OpenWA",
     "version": "v{{version}} · {{date}}"
   },
   "dashboard": {
@@ -628,7 +627,11 @@
       "sticker": "ملصق",
       "poll": "استطلاع",
       "forward": "إعادة توجيه",
-      "bulk": "جماعي"
+      "bulk": "جماعي",
+      "bulkImage": "صورة جماعية",
+      "bulkVideo": "فيديو جماعي",
+      "bulkAudio": "صوت جماعي",
+      "bulkDocument": "مستند جماعي"
     },
     "messageContent": "محتوى الرسالة",
     "messagePlaceholder": "أدخل رسالتك هنا...",
@@ -666,7 +669,9 @@
     "forwardMessageIdHint": "معرّف الرسالة المراد إعادة توجيهها",
     "bulkRecipients": "المستلمون",
     "bulkRecipientsPlaceholder": "+62812345678",
-    "bulkRecipientsHint": "رقم هاتف أو معرّف دردشة واحد في كل سطر (100 كحد أقصى)",
+    "bulkMediaType": "نوع الوسائط الجماعية",
+    "bulkMediaTypeHint": "حدد نوع الوسائط لإرسالها إلى جميع المستلمين",
+    "bulkRecipientsHint": "رقم هاتف أو معرّف دردشة واحد في كل سطر (100 كحد أقصى). استخدم {{variable}} في التعليق للاستبدال لكل مستلم.",
     "bulkRecipientsCount": "المستلمون: {{count}}",
     "bulkDelay": "التأخير بين الرسائل (مللي ثانية)",
     "bulkDelayHint": "1000–60000 مللي ثانية (الافتراضي 3000)",

@@ -192,7 +192,6 @@
     "connectionError": "לא ניתן להתחבר לשרת. יש לנסות שוב.",
     "help": "צריך עזרה?",
     "viewDocs": "לצפייה בתיעוד",
-    "footer": "נבנה באהבה על ידי Yudhi Armyndharis וקהילת OpenWA",
     "version": "v{{version}} · {{date}}"
   },
   "dashboard": {
@@ -622,7 +621,11 @@
       "sticker": "מדבקה",
       "poll": "סקר",
       "forward": "העברה",
-      "bulk": "מרובה"
+      "bulk": "מרובה",
+      "bulkImage": "תמונה מרובה",
+      "bulkVideo": "וידאו מרובה",
+      "bulkAudio": "אודיו מרובה",
+      "bulkDocument": "מסמך מרובה"
     },
     "messageContent": "תוכן ההודעה",
     "messagePlaceholder": "יש להזין כאן את ההודעה...",
@@ -660,7 +663,9 @@
     "forwardMessageIdHint": "מזהה ההודעה להעברה",
     "bulkRecipients": "נמענים",
     "bulkRecipientsPlaceholder": "+62812345678",
-    "bulkRecipientsHint": "מספר טלפון או מזהה צ'אט אחד בכל שורה (עד 100)",
+    "bulkMediaType": "סוג מדיה מרובה",
+    "bulkMediaTypeHint": "בחר את סוג המדיה לשליחה לכל הנמענים",
+    "bulkRecipientsHint": "מספר טלפון או מזהה צ'אט אחד בכל שורה (עד 100). השתמש ב-{{variable}} בכיתוב להחלפה לכל נמען.",
     "bulkRecipientsCount": "נמענים: {{count}}",
     "bulkDelay": "השהיה בין הודעות (אלפיות שנייה)",
     "bulkDelayHint": "1000–60000 אלפיות שנייה (ברירת מחדל 3000)",

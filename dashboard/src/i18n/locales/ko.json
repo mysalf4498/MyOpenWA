@@ -185,7 +185,6 @@
     "connectionError": "서버에 연결할 수 없습니다. 다시 시도해 주세요.",
     "help": "도움이 필요하신가요?",
     "viewDocs": "문서 보기",
-    "footer": "Yudhi Armyndharis와 OpenWA 커뮤니티가 ❤️로 만들었습니다",
     "version": "v{{version}} · {{date}}"
   },
   "dashboard": {
@@ -613,7 +612,11 @@
       "sticker": "스티커",
       "poll": "투표",
       "forward": "전달",
-      "bulk": "대량"
+      "bulk": "대량",
+      "bulkImage": "대량 이미지",
+      "bulkVideo": "대량 동영상",
+      "bulkAudio": "대량 오디오",
+      "bulkDocument": "대량 문서"
     },
     "messageContent": "메시지 내용",
     "messagePlaceholder": "메시지를 입력하세요...",
@@ -651,7 +654,9 @@
     "forwardMessageIdHint": "전달할 메시지의 ID",
     "bulkRecipients": "수신자",
     "bulkRecipientsPlaceholder": "+62812345678",
-    "bulkRecipientsHint": "한 줄에 하나의 전화번호 또는 채팅 ID (최대 100개)",
+    "bulkMediaType": "대량 미디어 유형",
+    "bulkMediaTypeHint": "모든 수신자에게 보낼 미디어 유형을 선택하세요",
+    "bulkRecipientsHint": "한 줄에 하나의 전화번호 또는 채팅 ID (최대 100개). 설명에 {{variable}}을 사용하여 수신자별 치환.",
     "bulkRecipientsCount": "수신자: {{count}}",
     "bulkDelay": "메시지 간 지연 (ms)",
     "bulkDelayHint": "1000–60000ms (기본값 3000)",

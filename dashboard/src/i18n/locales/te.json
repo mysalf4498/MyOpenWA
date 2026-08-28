@@ -185,7 +185,6 @@
     "connectionError": "సర్వర్‌కు కనెక్ట్ కాలేకపోయాము. దయచేసి మళ్లీ ప్రయత్నించండి.",
     "help": "సహాయం కావాలా?",
     "viewDocs": "డాక్యుమెంటేషన్ చూడండి",
-    "footer": "Yudhi Armyndharis మరియు OpenWA కమ్యూనిటీ ద్వారా ❤️ తో తయారు చేయబడింది",
     "version": "v{{version}} · {{date}}"
   },
   "dashboard": {
@@ -613,7 +612,11 @@
       "sticker": "స్టిక్కర్",
       "poll": "పోల్",
       "forward": "ఫార్వార్డ్",
-      "bulk": "బల్క్"
+      "bulk": "బల్క్",
+      "bulkImage": "బల్క్ చిత్రం",
+      "bulkVideo": "బల్క్ వీడియో",
+      "bulkAudio": "బల్క్ ఆడియో",
+      "bulkDocument": "బల్క్ డాక్యుమెంట్"
     },
     "messageContent": "సందేశం కంటెంట్",
     "messagePlaceholder": "మీ సందేశాన్ని ఇక్కడ ఎంటర్ చేయండి...",
@@ -651,7 +654,9 @@
     "forwardMessageIdHint": "ఫార్వార్డ్ చేయాల్సిన సందేశం యొక్క ID",
     "bulkRecipients": "గ్రహీతలు",
     "bulkRecipientsPlaceholder": "+62812345678",
-    "bulkRecipientsHint": "ఒక్కో లైన్‌లో ఒక ఫోన్ నంబర్ లేదా చాట్ ID (గరిష్టంగా 100)",
+    "bulkMediaType": "బల్క్ మీడియా రకం",
+    "bulkMediaTypeHint": "అన్ని리게）》లకు పంపడానికి మీడియా రకాన్ని ఎంచుకోండి",
+    "bulkRecipientsHint": "ప్రతి లైన్‌లో ఒక ఫోన్ నంబర్ లేదా చాట్ ID (గరిష్టంగా 100). క్యాప్షన్‌లో {{variable}}ని వాడిProvence ప్రతి Floridaogonist户为替代。",
     "bulkRecipientsCount": "గ్రహీతలు: {{count}}",
     "bulkDelay": "సందేశాల మధ్య విరామం (ms)",
     "bulkDelayHint": "1000–60000 ms (డిఫాల్ట్ 3000)",

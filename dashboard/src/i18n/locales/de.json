@@ -185,7 +185,6 @@
     "connectionError": "Verbindung zum Server nicht möglich. Bitte versuche es erneut.",
     "help": "Brauchst du Hilfe?",
     "viewDocs": "Dokumentation ansehen",
-    "footer": "Mit ❤️ erstellt von Yudhi Armyndharis und der OpenWA-Community",
     "version": "v{{version}} · {{date}}"
   },
   "dashboard": {
@@ -613,7 +612,11 @@
       "sticker": "Sticker",
       "poll": "Umfrage",
       "forward": "Weiterleiten",
-      "bulk": "Massenversand"
+      "bulk": "Massenversand",
+      "bulkImage": "Massenversand Bild",
+      "bulkVideo": "Massenversand Video",
+      "bulkAudio": "Massenversand Audio",
+      "bulkDocument": "Massenversand Dokument"
     },
     "messageContent": "Nachrichteninhalt",
     "messagePlaceholder": "Gib hier deine Nachricht ein...",
@@ -651,7 +654,9 @@
     "forwardMessageIdHint": "ID der weiterzuleitenden Nachricht",
     "bulkRecipients": "Empfänger",
     "bulkRecipientsPlaceholder": "+491701234567",
-    "bulkRecipientsHint": "Eine Telefonnummer oder Chat-ID pro Zeile (max. 100)",
+    "bulkMediaType": "Massenversand Medientyp",
+    "bulkMediaTypeHint": "Wähle den Medientyp für den Versand an alle Empfänger",
+    "bulkRecipientsHint": "Eine Telefonnummer oder Chat-ID pro Zeile (max. 100). Verwende {{variable}} in der Beschriftung für empfangerspezifische Ersetzung.",
     "bulkRecipientsCount": "Empfänger: {{count}}",
     "bulkDelay": "Verzögerung zwischen Nachrichten (ms)",
     "bulkDelayHint": "1000–60000 ms (Standard: 3000)",

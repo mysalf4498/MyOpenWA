@@ -185,7 +185,6 @@
     "connectionError": "無法連線到伺服器。請再試一次。",
     "help": "需要協助？",
     "viewDocs": "查看文件",
-    "footer": "由 Yudhi Armyndharis 及 OpenWA 社群用 ❤️ 打造",
     "version": "v{{version}} · {{date}}"
   },
   "dashboard": {
@@ -613,7 +612,11 @@
       "sticker": "貼圖",
       "poll": "投票",
       "forward": "轉發",
-      "bulk": "批量"
+      "bulk": "批量",
+      "bulkImage": "批量圖片",
+      "bulkVideo": "批量影片",
+      "bulkAudio": "批量音訊",
+      "bulkDocument": "批量文件"
     },
     "messageContent": "訊息內容",
     "messagePlaceholder": "在此輸入你的訊息...",
@@ -651,7 +654,9 @@
     "forwardMessageIdHint": "要轉發的訊息 ID",
     "bulkRecipients": "收件人",
     "bulkRecipientsPlaceholder": "+62812345678",
-    "bulkRecipientsHint": "每行一個電話號碼或對話 ID（最多 100 個）",
+    "bulkMediaType": "批量媒體類型",
+    "bulkMediaTypeHint": "選擇要發送給所有接收者的媒體類型",
+    "bulkRecipientsHint": "每行一個電話號碼或對話 ID（最多 100 個）。在說明文字中使用 {{variable}} 進行按接收者替換。",
     "bulkRecipientsCount": "收件人：{{count}}",
     "bulkDelay": "訊息之間的延遲（毫秒）",
     "bulkDelayHint": "1000–60000 毫秒（預設 3000）",

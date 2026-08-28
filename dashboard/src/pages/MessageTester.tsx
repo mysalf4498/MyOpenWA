@@ -8,6 +8,7 @@ import {
   type MessageResponse,
   type BatchStatus,
   type BatchStatusResponse,
+  type BulkMessageItem,
 } from '../services/api';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useRole } from '../hooks/useRole';
@@ -43,11 +44,14 @@ const messageTypes = [
   'bulk',
 ] as const;
 
+const bulkMediaTypes = ['text', 'image', 'video', 'audio', 'document'] as const;
+type BulkMediaType = (typeof bulkMediaTypes)[number];
+
 // The types that share the media upload/URL block (base64 XOR url + mimetype).
 const mediaMessageTypes: readonly string[] = ['image', 'video', 'audio', 'document', 'sticker'];
 
 // Hint the native file picker at the right category (documents accept anything).
-const mediaAccept: Record<(typeof messageTypes)[number], string> = {
+const mediaAccept: Record<string, string> = {
   text: '*/*',
   image: 'image/*',
   video: 'video/*',
@@ -59,11 +63,15 @@ const mediaAccept: Record<(typeof messageTypes)[number], string> = {
   poll: '*/*',
   forward: '*/*',
   bulk: '*/*',
+  bulkImage: 'image/*',
+  bulkVideo: 'video/*',
+  bulkAudio: 'audio/*',
+  bulkDocument: '*/*',
 };
 
 // Fallback MIME for when the browser leaves File.type empty (some extensions). The backend requires a
 // mimetype on every base64 send, so default by the selected message category.
-const fallbackMime: Record<(typeof messageTypes)[number], string> = {
+const fallbackMime: Record<string, string> = {
   text: 'text/plain',
   image: 'image/jpeg',
   video: 'video/mp4',
@@ -75,6 +83,10 @@ const fallbackMime: Record<(typeof messageTypes)[number], string> = {
   poll: 'application/octet-stream',
   forward: 'application/octet-stream',
   bulk: 'application/octet-stream',
+  bulkImage: 'image/jpeg',
+  bulkVideo: 'video/mp4',
+  bulkAudio: 'audio/mpeg',
+  bulkDocument: 'application/octet-stream',
 };
 
 // Client pre-check before base64-encoding an upload. Aligned with the default request-body limit: base64
@@ -97,6 +109,7 @@ export function MessageTester() {
   const [recipientType, setRecipientType] = useState<'personal' | 'group'>('personal');
   const [selectedGroup, setSelectedGroup] = useState('');
   const [messageType, setMessageType] = useState<(typeof messageTypes)[number]>('text');
+  const [bulkMediaType, setBulkMediaType] = useState<BulkMediaType>('image');
   const [content, setContent] = useState('');
   const [mediaUrl, setMediaUrl] = useState('');
   // A locally-picked media file, read as raw base64 (the engine contract — NOT a data: URI). Mutually
@@ -257,11 +270,19 @@ export function MessageTester() {
   } else if (messageType === 'forward') {
     formValid = forwardTo.trim().length > 0 && forwardMessageId.trim().length > 0;
   } else if (messageType === 'bulk') {
-    formValid =
-      content.trim().length > 0 &&
-      bulkRecipientList.length > 0 &&
-      bulkRecipientList.length <= BULK_MAX_RECIPIENTS &&
-      (delayMs === undefined || (!Number.isNaN(delayMs) && delayMs >= 1000 && delayMs <= 60000));
+    if (bulkMediaType === 'text') {
+      formValid =
+        content.trim().length > 0 &&
+        bulkRecipientList.length > 0 &&
+        bulkRecipientList.length <= BULK_MAX_RECIPIENTS &&
+        (delayMs === undefined || (!Number.isNaN(delayMs) && delayMs >= 1000 && delayMs <= 60000));
+    } else {
+      formValid =
+        (!!mediaFile || mediaUrl.trim().length > 0) &&
+        bulkRecipientList.length > 0 &&
+        bulkRecipientList.length <= BULK_MAX_RECIPIENTS &&
+        (delayMs === undefined || (!Number.isNaN(delayMs) && delayMs >= 1000 && delayMs <= 60000));
+    }
   }
 
   const isSendDisabled =
@@ -301,12 +322,26 @@ export function MessageTester() {
 
       // Bulk is a batch, not a single send: 202 + batchId, then poll progress until terminal.
       if (messageType === 'bulk') {
-        const batch = await messageApi.sendBulk(session, {
-          messages: bulkRecipientList.map(recipientChatId => ({
+        const messages = bulkRecipientList.map(recipientChatId => {
+          const item: BulkMessageItem = {
             chatId: recipientChatId,
-            type: 'text' as const,
-            content: { text: content },
-          })),
+            type: bulkMediaType,
+            content: {},
+          };
+          if (bulkMediaType === 'text') {
+            item.content.text = content;
+          } else {
+            const mediaPayload = mediaFile
+              ? { base64: mediaFile.base64, mimetype: mediaFile.mimetype }
+              : { url: mediaUrl };
+            item.content[bulkMediaType] = mediaPayload;
+            if (content.trim()) item.content.caption = content;
+          }
+          return item;
+        });
+
+        const batch = await messageApi.sendBulk(session, {
+          messages,
           ...(delayMs !== undefined ? { options: { delayBetweenMessages: delayMs } } : {}),
         });
         batchSessionRef.current = session;
@@ -819,15 +854,94 @@ export function MessageTester() {
                 </span>
               </div>
               <div className="form-group">
-                <label htmlFor="mt-12">{t('messageTester.messageContent')}</label>
-                <textarea
-                  id="mt-12"
-                  value={content}
-                  onChange={e => setContent(e.target.value)}
-                  placeholder={t('messageTester.messagePlaceholder')}
-                  rows={4}
-                />
+                <span className="group-label" id="bulk-media-type-label">
+                  {t('messageTester.bulkMediaType')}
+                </span>
+                <div className="toggle-group toggle-group-wrap" role="group" aria-labelledby="bulk-media-type-label">
+                  {bulkMediaTypes.map(type => (
+                    <button
+                      key={type}
+                      type="button"
+                      aria-pressed={bulkMediaType === type}
+                      className={bulkMediaType === type ? 'active' : ''}
+                      onClick={() => {
+                        if (type !== bulkMediaType) clearMediaFile();
+                        setBulkMediaType(type);
+                      }}
+                    >
+                      {t(`messageTester.types.bulk${type.charAt(0).toUpperCase() + type.slice(1)}`)}
+                    </button>
+                  ))}
+                </div>
+                <span className="hint">{t('messageTester.bulkMediaTypeHint')}</span>
               </div>
+              {bulkMediaType === 'text' ? (
+                <div className="form-group">
+                  <label htmlFor="mt-12">{t('messageTester.messageContent')}</label>
+                  <textarea
+                    id="mt-12"
+                    value={content}
+                    onChange={e => setContent(e.target.value)}
+                    placeholder={t('messageTester.messagePlaceholder')}
+                    rows={4}
+                  />
+                </div>
+              ) : (
+                <>
+                  <div className="form-group">
+                    <label htmlFor="mt-3">{t('messageTester.mediaUrl')}</label>
+                    <input
+                      id="mt-3"
+                      type="text"
+                      value={mediaUrl}
+                      onChange={e => {
+                        setMediaUrl(e.target.value);
+                        mediaReadSeq.current += 1;
+                        if (mediaFile) setMediaFile(null);
+                      }}
+                      placeholder="https://example.com/file.jpg"
+                      disabled={!!mediaFile}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>{t('messageTester.uploadFile')}</label>
+                    {mediaFile ? (
+                      <div className="file-selected">
+                        <span className="file-name" title={mediaFile.filename}>
+                          {mediaFile.filename}
+                        </span>
+                        <button type="button" className="remove-file-btn" onClick={clearMediaFile}>
+                          <X size={14} /> {t('messageTester.removeFile')}
+                        </button>
+                      </div>
+                    ) : (
+                      <button type="button" className="browse-btn" onClick={() => fileInputRef.current?.click()}>
+                        <Upload size={14} /> {t('messageTester.browse')}
+                      </button>
+                    )}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      style={{ display: 'none' }}
+                      accept={mediaAccept[`bulk${bulkMediaType.charAt(0).toUpperCase() + bulkMediaType.slice(1)}` as BulkMediaType]}
+                      onChange={handleFileChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="mt-14">
+                      {t('messageTester.caption')} ({t('common.optional')})
+                    </label>
+                    <input
+                      id="mt-14"
+                      type="text"
+                      value={content}
+                      onChange={e => setContent(e.target.value)}
+                      placeholder={t('messageTester.captionPlaceholder')}
+                    />
+                    <span className="hint">{t('messageTester.captionPlaceholder')}</span>
+                  </div>
+                </>
+              )}
               <div className="form-group">
                 <label htmlFor="mt-18">
                   {t('messageTester.bulkDelay')} ({t('common.optional')})

@@ -185,7 +185,6 @@
     "connectionError": "Sunucuya bağlanılamadı. Lütfen tekrar deneyin.",
     "help": "Yardıma mı ihtiyacınız var?",
     "viewDocs": "Dokümantasyonu Görüntüle",
-    "footer": "Yudhi Armyndharis ve OpenWA Topluluğu tarafından ❤️ ile yapılmıştır",
     "version": "v{{version}} · {{date}}"
   },
   "dashboard": {
@@ -613,7 +612,11 @@
       "sticker": "Çıkartma",
       "poll": "Anket",
       "forward": "İlet",
-      "bulk": "Toplu"
+      "bulk": "Toplu",
+      "bulkImage": "Toplu Görsel",
+      "bulkVideo": "Toplu Video",
+      "bulkAudio": "Toplu Ses",
+      "bulkDocument": "Toplu Belge"
     },
     "messageContent": "Mesaj İçeriği",
     "messagePlaceholder": "Mesajınızı buraya girin...",
@@ -651,7 +654,9 @@
     "forwardMessageIdHint": "İletilecek mesajın ID'si",
     "bulkRecipients": "Alıcılar",
     "bulkRecipientsPlaceholder": "+905XXXXXXXXX",
-    "bulkRecipientsHint": "Her satıra bir telefon numarası veya sohbet ID'si (maks 100)",
+    "bulkMediaType": "Toplu Medya Türü",
+    "bulkMediaTypeHint": "Tüm alıcılara gönderilecek medya türünü seçin",
+    "bulkRecipientsHint": "Her satıra bir telefon numarası veya sohbet ID'si (maks 100). Açıklamada {{variable}} kullanarak alıcı başına yer değiştirme.",
     "bulkRecipientsCount": "Alıcılar: {{count}}",
     "bulkDelay": "Mesajlar Arası Gecikme (ms)",
     "bulkDelayHint": "1000–60000 ms (varsayılan 3000)",

@@ -185,7 +185,6 @@
     "connectionError": "No se puede conectar al servidor. Por favor, inténtalo de nuevo.",
     "help": "¿Necesitas ayuda?",
     "viewDocs": "Ver documentación",
-    "footer": "Hecho con ❤️ por Yudhi Armyndharis y la comunidad OpenWA",
     "version": "v{{version}} · {{date}}"
   },
   "dashboard": {
@@ -567,7 +566,11 @@
       "sticker": "Sticker",
       "poll": "Encuesta",
       "forward": "Reenviar",
-      "bulk": "Masivo"
+      "bulk": "Masivo",
+      "bulkImage": "Imagen Masiva",
+      "bulkVideo": "Vídeo Masivo",
+      "bulkAudio": "Audio Masivo",
+      "bulkDocument": "Documento Masivo"
     },
     "messageContent": "Contenido del mensaje",
     "messagePlaceholder": "Escribe tu mensaje aquí...",
@@ -605,7 +608,9 @@
     "forwardMessageIdHint": "ID del mensaje que se va a reenviar",
     "bulkRecipients": "Destinatarios",
     "bulkRecipientsPlaceholder": "+62812345678",
-    "bulkRecipientsHint": "Un número de teléfono o ID de chat por línea (máx. 100)",
+    "bulkMediaType": "Tipo de Medio Masivo",
+    "bulkMediaTypeHint": "Selecciona el tipo de medio para enviar a todos los destinatarios",
+    "bulkRecipientsHint": "Un número de teléfono o ID de chat por línea (máx. 100). Usa {{variable}} en el pie de foto para sustitución por destinatario.",
     "bulkRecipientsCount": "Destinatarios: {{count}}",
     "bulkDelay": "Retraso entre mensajes (ms)",
     "bulkDelayHint": "1000–60000 ms (predeterminado: 3000)",

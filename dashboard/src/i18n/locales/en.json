@@ -185,7 +185,6 @@
     "connectionError": "Unable to connect to server. Please try again.",
     "help": "Need help?",
     "viewDocs": "View Documentation",
-    "footer": "Made with ❤️ by Yudhi Armyndharis and the OpenWA Community",
     "version": "v{{version}} · {{date}}"
   },
   "dashboard": {
@@ -613,7 +612,11 @@
       "sticker": "Sticker",
       "poll": "Poll",
       "forward": "Forward",
-      "bulk": "Bulk"
+      "bulk": "Bulk",
+      "bulkImage": "Bulk Image",
+      "bulkVideo": "Bulk Video",
+      "bulkAudio": "Bulk Audio",
+      "bulkDocument": "Bulk Document"
     },
     "messageContent": "Message Content",
     "messagePlaceholder": "Enter your message here...",
@@ -651,7 +654,9 @@
     "forwardMessageIdHint": "ID of the message to forward",
     "bulkRecipients": "Recipients",
     "bulkRecipientsPlaceholder": "+62812345678",
-    "bulkRecipientsHint": "One phone number or chat ID per line (max 100)",
+    "bulkMediaType": "Bulk Media Type",
+    "bulkMediaTypeHint": "Select the type of media to send to all recipients",
+    "bulkRecipientsHint": "One phone number or chat ID per line (max 100). Use {{variable}} in caption for per-recipient substitution.",
     "bulkRecipientsCount": "Recipients: {{count}}",
     "bulkDelay": "Delay Between Messages (ms)",
     "bulkDelayHint": "1000–60000 ms (default 3000)",

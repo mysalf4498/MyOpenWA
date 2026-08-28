@@ -185,7 +185,6 @@
     "connectionError": "无法连接到服务器。请重试。",
     "help": "需要帮助？",
     "viewDocs": "查看文档",
-    "footer": "由 Yudhi Armyndharis 和 OpenWA 社区用 ❤️ 打造",
     "version": "v{{version}} · {{date}}"
   },
   "dashboard": {
@@ -613,7 +612,11 @@
       "sticker": "贴纸",
       "poll": "投票",
       "forward": "转发",
-      "bulk": "批量"
+      "bulk": "批量",
+      "bulkImage": "批量图片",
+      "bulkVideo": "批量视频",
+      "bulkAudio": "批量音频",
+      "bulkDocument": "批量文档"
     },
     "messageContent": "消息内容",
     "messagePlaceholder": "在此输入你的消息...",
@@ -651,7 +654,9 @@
     "forwardMessageIdHint": "要转发的消息 ID",
     "bulkRecipients": "接收者",
     "bulkRecipientsPlaceholder": "+62812345678",
-    "bulkRecipientsHint": "每行一个电话号码或聊天 ID（最多 100 个）",
+    "bulkMediaType": "批量媒体类型",
+    "bulkMediaTypeHint": "选择要发送给所有接收者的媒体类型",
+    "bulkRecipientsHint": "每行一个电话号码或聊天 ID（最多 100 个）。在说明文字中使用 {{variable}} 进行按接收者替换。",
     "bulkRecipientsCount": "接收者：{{count}}",
     "bulkDelay": "消息间隔延迟（毫秒）",
     "bulkDelayHint": "1000–60000 毫秒（默认 3000）",
