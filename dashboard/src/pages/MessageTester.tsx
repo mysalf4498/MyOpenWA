@@ -869,7 +869,7 @@ export function MessageTester() {
                         setBulkMediaType(type);
                       }}
                     >
-                      {t(`messageTester.types.bulk${type.charAt(0).toUpperCase() + type.slice(1)}`)}
+                      {t(`messageTester.types.${type === 'text' ? 'bulk' : `bulk${type.charAt(0).toUpperCase() + type.slice(1)}`}`)}
                     </button>
                   ))}
                 </div>
@@ -928,17 +928,14 @@ export function MessageTester() {
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="mt-14">
-                      {t('messageTester.caption')} ({t('common.optional')})
-                    </label>
-                    <input
+                    <label htmlFor="mt-14">{t('messageTester.caption')}</label>
+                    <textarea
                       id="mt-14"
-                      type="text"
                       value={content}
                       onChange={e => setContent(e.target.value)}
                       placeholder={t('messageTester.captionPlaceholder')}
+                      rows={3}
                     />
-                    <span className="hint">{t('messageTester.captionPlaceholder')}</span>
                   </div>
                 </>
               )}
