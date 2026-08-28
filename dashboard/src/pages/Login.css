@@ -33,10 +33,11 @@
   margin-bottom: 1.5rem;
 }
 
-.login-container .logo-icon {
-  width: 127px;
-  height: 127px;
-  object-fit: contain;
+.login-container .brand-name {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 
 .login-container .version-info {
