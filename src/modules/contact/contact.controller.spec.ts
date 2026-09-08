@@ -96,6 +96,20 @@ describe('ContactController', () => {
     expect(service.upsertContact).toHaveBeenCalledWith('s1', 'c1', 'A', 'B');
   });
 
+  it('upsertContactByNumber qualifies a bare number and passes first/last name', async () => {
+    service.upsertContact.mockResolvedValue(undefined);
+    await expect(
+      controller.upsertContactByNumber('s1', { number: '628123456789', firstName: 'A', lastName: 'B' }),
+    ).resolves.toEqual({ success: true, message: 'Contact saved' });
+    expect(service.upsertContact).toHaveBeenCalledWith('s1', '628123456789', 'A', 'B');
+  });
+
+  it('upsertContactByNumber passes a lastName-less body', async () => {
+    service.upsertContact.mockResolvedValue(undefined);
+    await controller.upsertContactByNumber('s1', { number: '628123456789', firstName: 'A' });
+    expect(service.upsertContact).toHaveBeenCalledWith('s1', '628123456789', 'A', undefined);
+  });
+
   it.each([
     ['deleteContact', { success: true, message: 'Contact deleted' }],
     ['blockContact', { success: true, message: 'Contact blocked' }],

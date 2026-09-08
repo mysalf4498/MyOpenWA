@@ -4,6 +4,7 @@ import { ContactService } from './contact.service';
 import { RequireRole } from '../auth/decorators/auth.decorators';
 import { ApiKeyRole } from '../auth/entities/api-key.entity';
 import { UpsertContactDto } from './dto/upsert-contact.dto';
+import { UpsertContactByNumberDto } from './dto/upsert-contact-by-number.dto';
 import {
   ContactAckResponseDto,
   ContactDto,
@@ -167,6 +168,32 @@ export class ContactController {
   async resolvePhone(@Param('sessionId') sessionId: string, @Param('contactId') contactId: string) {
     const phone = await this.contactService.resolveContactPhone(sessionId, contactId);
     return { contactId, phone };
+  }
+
+  // NOTE: declared BEFORE @Put(':contactId') so the literal `by-number` segment wins over the
+  // `:contactId` param route — put/delete share this pitfall with the profile-picture routes above.
+  @Put('by-number')
+  @RequireRole(ApiKeyRole.OPERATOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Save or edit a contact by phone number, keyed into the account's addressbook",
+    description:
+      'Takes a bare MSISDN number (no @c.us, no leading +) plus a first/last name in the body, ' +
+      'qualifies the number, and saves/edits the matching addressbook entry.',
+  })
+  @ApiParam({ name: 'sessionId', description: 'Session ID' })
+  @ApiResponse({ status: 200, description: 'Contact saved', type: ContactAckResponseDto })
+  @ApiResponse({ status: 400, description: 'Session not active, invalid number/name, or non-phone key' })
+  @ApiResponse({
+    status: 503,
+    description:
+      'WhatsApp did not answer within the request budget. The change may or may not have been applied — ' +
+      'the gateway stopped waiting for a confirmation that never came.',
+  })
+  @ApiResponse({ status: 409, description: ENGINE_NOT_READY_409 })
+  async upsertContactByNumber(@Param('sessionId') sessionId: string, @Body() dto: UpsertContactByNumberDto) {
+    await this.contactService.upsertContact(sessionId, dto.number, dto.firstName, dto.lastName);
+    return { success: true, message: 'Contact saved' };
   }
 
   @Put(':contactId')

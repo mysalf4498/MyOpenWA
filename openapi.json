@@ -4703,6 +4703,58 @@
         ]
       }
     },
+    "/api/sessions/{sessionId}/contacts/by-number": {
+      "put": {
+        "description": "Takes a bare MSISDN number (no @c.us, no leading +) plus a first/last name in the body, qualifies the number, and saves/edits the matching addressbook entry.",
+        "operationId": "ContactController_upsertContactByNumber",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "description": "Session ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertContactByNumberDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactAckResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Session not active, invalid number/name, or non-phone key"
+          },
+          "409": {
+            "description": "The session is not connected — an engine exists for it but is not `ready`: disconnected, reconnecting, or still initializing, so the request never reached WhatsApp. Wait for `ready` and retry. A session that was never started answers `400` instead, and the session lifecycle routes answer `409` for a conflicting state rather than this. One window answers this while the session still reads `ready`: WhatsApp Web periodically reloads its own page and the engine re-injects into it — for those few seconds the answer is a `409` naming the reload; retry shortly."
+          },
+          "503": {
+            "description": "WhatsApp did not answer within the request budget. The change may or may not have been applied — the gateway stopped waiting for a confirmation that never came."
+          }
+        },
+        "summary": "Save or edit a contact by phone number, keyed into the account's addressbook",
+        "tags": [
+          "contacts"
+        ]
+      }
+    },
     "/api/sessions/{sessionId}/contacts/{contactId}/block": {
       "post": {
         "operationId": "ContactController_blockContact",
@@ -14237,21 +14289,29 @@
           "phone"
         ]
       },
-      "UpsertContactDto": {
+      "UpsertContactByNumberDto": {
         "type": "object",
         "properties": {
+          "number": {
+            "type": "string",
+            "description": "MSISDN digits without a leading `+` or any separators (min 5 digits).",
+            "example": "628123456789"
+          },
           "firstName": {
             "type": "string",
             "description": "The contact's first name.",
-            "maxLength": 100
+            "maxLength": 100,
+            "example": "Jane"
           },
           "lastName": {
             "type": "string",
-            "description": "The contact's last name. Omit for a single-name contact — WhatsApp allows those.",
-            "maxLength": 100
+            "description": "The contact's last name. Omit for a single-name contact.",
+            "maxLength": 100,
+            "example": "Doe"
           }
         },
         "required": [
+          "number",
           "firstName"
         ]
       },
@@ -14272,6 +14332,24 @@
         "required": [
           "success",
           "message"
+        ]
+      },
+      "UpsertContactDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "The contact's first name.",
+            "maxLength": 100
+          },
+          "lastName": {
+            "type": "string",
+            "description": "The contact's last name. Omit for a single-name contact — WhatsApp allows those.",
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "firstName"
         ]
       },
       "GroupJoinInfoDto": {
