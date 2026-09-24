@@ -68,12 +68,17 @@
   "chats": {
     "media": {
       "location": "الموقع",
+      "openLocation": "افتح في خرائط Google",
       "call": "مكالمة",
       "callMissed": "مكالمة فائتة",
       "callVideo": "مكالمة فيديو",
       "callVideoMissed": "مكالمة فيديو فائتة",
       "omitted": "وسائط",
-      "image": "صورة"
+      "image": "صورة",
+      "download": "تنزيل",
+      "showLink": "إظهار الرابط",
+      "copyLink": "نسخ الرابط",
+      "linkCopied": "تم نسخ الرابط"
     },
     "subtitle": "أرسل ورد على رسائل واتساب في الوقت الفعلي",
     "noSessionsTitle": "لا توجد جلسات متصلة",

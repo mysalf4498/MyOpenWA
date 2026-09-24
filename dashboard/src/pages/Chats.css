@@ -979,6 +979,25 @@
   margin-bottom: 0.25rem;
 }
 
+/* A location bubble with stored coordinates is one tap on the whole card: the wrapper is an <a> that
+   opens the shared map in a new tab. Matches the previous block layout so the clickable surface feels
+   like the bubble, with the label offering the only visible affordance. */
+.chats-page .chat-location-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.chats-page .chat-location-link:hover .chat-location-media {
+  filter: brightness(0.92);
+}
+
+.chats-page .chat-location-link .chat-location-external {
+  color: inherit;
+  margin-left: 0.2rem;
+  vertical-align: -1px;
+}
+
 .chats-page .chat-video-media {
   max-width: 100%;
   max-height: 250px;
@@ -991,6 +1010,138 @@
   max-width: 100%;
   display: block;
   margin-bottom: 0.5rem;
+}
+
+/* Per-type download control under images, video and audio. The document type has its own download
+   link, the omitted placeholder its own fetch button — this covers the media rendered inline. */
+.chats-page .chat-media-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--border);
+  background: var(--bg-light);
+  color: var(--text-muted);
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    background 0.2s;
+  margin-bottom: 0.25rem;
+}
+
+.chats-page .chat-media-download:hover {
+  color: var(--text-primary);
+  background: var(--border);
+}
+
+/* Revealed source URL for remote- (URL-based) sends: the bytes live off-box so there is nothing to
+   download — this shows the actual link as selectable text plus a copy button. Looks like the
+   document chip so the panel reads as one unit under the media. */
+.chats-page .chat-media-url-panel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.chats-page .chat-media-url-code {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  font-family: var(--font-mono, ui-monospace, 'SF Mono', Consolas, 'Liberation Mono', monospace);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  user-select: text;
+}
+
+.chats-page .chat-media-copy-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--border);
+  background: var(--bg-light);
+  color: var(--text-muted);
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    background 0.2s;
+}
+
+.chats-page .chat-media-copy-link:hover {
+  color: var(--text-primary);
+  background: var(--border);
+}
+
+[data-theme='dark'] .chats-page .chat-media-url-panel {
+  background: #111b21;
+  border-color: #2f3b43;
+}
+
+[data-theme='dark'] .chats-page .chat-media-copy-link {
+  background: #202c33;
+  border-color: #2f3b43;
+  color: #8696a0;
+}
+
+[data-theme='dark'] .chats-page .chat-media-copy-link:hover {
+  color: #e9edef;
+  background: #2a3942;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .chats-page .chat-media-url-panel {
+    background: #111b21;
+    border-color: #2f3b43;
+  }
+
+  :root:not([data-theme='light']) .chats-page .chat-media-copy-link {
+    background: #202c33;
+    border-color: #2f3b43;
+    color: #8696a0;
+  }
+
+  :root:not([data-theme='light']) .chats-page .chat-media-copy-link:hover {
+    color: #e9edef;
+    background: #2a3942;
+  }
+}
+
+[data-theme='dark'] .chats-page .chat-media-download {
+  background: #202c33;
+  border-color: #2f3b43;
+  color: #8696a0;
+}
+
+[data-theme='dark'] .chats-page .chat-media-download:hover {
+  color: #e9edef;
+  background: #2a3942;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .chats-page .chat-media-download {
+    background: #202c33;
+    border-color: #2f3b43;
+    color: #8696a0;
+  }
+
+  :root:not([data-theme='light']) .chats-page .chat-media-download:hover {
+    color: #e9edef;
+    background: #2a3942;
+  }
 }
 
 .chats-page .chat-document-media {

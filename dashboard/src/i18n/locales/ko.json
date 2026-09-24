@@ -68,12 +68,17 @@
   "chats": {
     "media": {
       "location": "위치",
+      "openLocation": "Google 지도에서 열기",
       "call": "통화",
       "callMissed": "부재중 전화",
       "callVideo": "영상 통화",
       "callVideoMissed": "부재중 영상 통화",
       "omitted": "미디어",
-      "image": "이미지"
+      "image": "이미지",
+      "download": "다운로드",
+      "showLink": "링크 표시",
+      "copyLink": "링크 복사",
+      "linkCopied": "링크가 복사되었습니다"
     },
     "subtitle": "실시간으로 WhatsApp 메시지를 보내고 답장하세요",
     "noSessionsTitle": "연결된 세션 없음",

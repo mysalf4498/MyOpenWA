@@ -68,12 +68,17 @@
   "chats": {
     "media": {
       "location": "Location",
+      "openLocation": "Open in Google Maps",
       "call": "Call",
       "callMissed": "Missed call",
       "callVideo": "Video call",
       "callVideoMissed": "Missed video call",
       "omitted": "Media",
-      "image": "Image"
+      "image": "Image",
+      "download": "Download",
+      "showLink": "Show link",
+      "copyLink": "Copy link",
+      "linkCopied": "Link copied"
     },
     "subtitle": "Send and reply to WhatsApp messages in real time",
     "noSessionsTitle": "No connected sessions",

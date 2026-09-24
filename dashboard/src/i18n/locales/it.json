@@ -68,12 +68,17 @@
   "chats": {
     "media": {
       "location": "Posizione",
+      "openLocation": "Apri in Google Maps",
       "call": "Chiamata",
       "callMissed": "Chiamata persa",
       "callVideo": "Videochiamata",
       "callVideoMissed": "Videochiamata persa",
       "omitted": "Media",
-      "image": "Immagine"
+      "image": "Immagine",
+      "download": "Scarica",
+      "showLink": "Mostra link",
+      "copyLink": "Copia link",
+      "linkCopied": "Link copiato"
     },
     "subtitle": "Invia e rispondi ai messaggi WhatsApp in tempo reale",
     "noSessionsTitle": "Nessuna sessione connessa",

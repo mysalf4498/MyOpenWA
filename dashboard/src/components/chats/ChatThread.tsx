@@ -1,8 +1,21 @@
 import { useCallback, useEffect, useState, type RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, CornerUpLeft, Loader2, MessageSquare, Smile, Trash2 } from 'lucide-react';
+import {
+  Check,
+  ChevronDown,
+  Copy,
+  CornerUpLeft,
+  Download,
+  ExternalLink,
+  Link,
+  Loader2,
+  MessageSquare,
+  Smile,
+  Trash2,
+} from 'lucide-react';
 import { sessionApi, type Chat } from '../../services/api';
-import { getMediaSrc, senderKey, type ChatMessageView } from '../../utils/chatMessages';
+import { getMediaSrc, isRemoteMediaUrl, senderKey, type ChatMessageView } from '../../utils/chatMessages';
+import { copyToClipboard } from '../../utils/clipboard';
 import MessageBody from './MessageBody';
 
 // Stable per-sender colour for group message labels, like WhatsApp gives each participant a colour.
@@ -59,6 +72,21 @@ function ChatThread({
   // overwrite the first, after which whichever settled first cleared the other's state — re-enabling
   // a button whose fetch was still open, and landing a failure marker on the wrong bubble.
   const [mediaFetch, setMediaFetch] = useState<Record<string, 'loading' | 'failed'>>({});
+
+  // Remote-sourced media can't be force-downloaded (the anchor `download` attribute is ignored on a
+  // cross-origin URL), so the thread reveals the source URL as copyable text instead of letting the
+  // click navigate the SPA off-box. Keyed by message id, mirroring `mediaFetch`: each bubble owns its
+  // own reveal state and copy feedback, so toggling one never touches a neighbour's.
+  const [revealedLink, setRevealedLink] = useState<Record<string, boolean>>({});
+  const [copiedLink, setCopiedLink] = useState<Record<string, 'idle' | 'copied'>>({});
+
+  const toggleRevealedLink = (id: string) => setRevealedLink(prev => ({ ...prev, [id]: !prev[id] }));
+
+  const copyMediaLink = async (id: string, url: string) => {
+    if (!(await copyToClipboard(url))) return;
+    setCopiedLink(prev => ({ ...prev, [id]: 'copied' }));
+    setTimeout(() => setCopiedLink(prev => ({ ...prev, [id]: 'idle' })), 2000);
+  };
   const downloadMedia = useCallback(
     async (message: ChatMessageView) => {
       const messageId = message.waMessageId;
@@ -184,10 +212,41 @@ function ChatThread({
             if (msg.type === 'location') {
               // WhatsApp location messages carry a base64 JPEG map-preview thumbnail in `body`.
               const thumb = msg.body && msg.body.length > 100 ? `data:image/jpeg;base64,${msg.body}` : '';
+              // The shared map link is the whole point of the bubble: wire it to Google Maps from the
+              // stored coordinates (a sender-supplied `url` wins when the engine carried one). A row
+              // persisted before coordinates were stored renders the same content without the click.
+              const loc = msg.metadata?.location;
+              const mapUrl =
+                (loc?.url && /^https?:\/\//i.test(loc.url) && loc.url) ||
+                (loc &&
+                  Number.isFinite(loc.latitude) &&
+                  Number.isFinite(loc.longitude) &&
+                  `https://www.google.com/maps/search/?api=1&query=${loc.latitude},${loc.longitude}`) ||
+                '';
+              const content = (
+                <>
+                  {thumb && <img src={thumb} alt="" onLoad={onMediaLoad} className="chat-location-media" />}
+                  <span className="message-media-omitted">
+                    📍 {t('chats.media.location')}
+                    {mapUrl && <ExternalLink size={11} className="chat-location-external" aria-hidden="true" />}
+                  </span>
+                </>
+              );
               return (
                 <div className="message-location">
-                  {thumb && <img src={thumb} alt="" onLoad={onMediaLoad} className="chat-location-media" />}
-                  <span className="message-media-omitted">📍 {t('chats.media.location')}</span>
+                  {mapUrl ? (
+                    <a
+                      href={mapUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="chat-location-link"
+                      title={t('chats.media.openLocation')}
+                    >
+                      {content}
+                    </a>
+                  ) : (
+                    content
+                  )}
                 </div>
               );
             }
@@ -229,6 +288,63 @@ function ChatThread({
             const mediaSrc = getMediaSrc(mediaInfo);
             if (!mediaSrc) return null;
 
+            // A remote http(s) src means a URL-based send: the bytes live off-box, so the anchor
+            // `download` attribute is ignored and the browser would navigate the whole dashboard away
+            // to the URL. For those bubbles the button reveals the URL as copyable text instead of
+            // pretending a file download happened. Inline base64 still downloads for real, and rows
+            // without inline data fall back to the per-message media route.
+            const remoteSrc = isRemoteMediaUrl(mediaSrc) ? mediaSrc : '';
+            const download = () => {
+              if (remoteSrc) {
+                toggleRevealedLink(msg.id);
+                return;
+              }
+              if (mediaSrc) {
+                const link = document.createElement('a');
+                link.href = mediaSrc;
+                link.download = mediaInfo.filename || msg.type;
+                link.click();
+              } else {
+                void downloadMedia(msg);
+              }
+            };
+            const downloadButton = remoteSrc ? (
+              <button
+                type="button"
+                className="chat-media-download"
+                onClick={download}
+                title={t('chats.media.showLink')}
+              >
+                <Link size={13} />
+                {t('chats.media.showLink')}
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="chat-media-download"
+                onClick={download}
+                title={t('chats.media.download')}
+              >
+                <Download size={13} />
+                {t('chats.media.download')}
+              </button>
+            );
+            const urlPanel =
+              remoteSrc && revealedLink[msg.id] ? (
+                <div className="chat-media-url-panel">
+                  <code className="chat-media-url-code">{remoteSrc}</code>
+                  <button
+                    type="button"
+                    className="chat-media-copy-link"
+                    onClick={() => void copyMediaLink(msg.id, remoteSrc)}
+                    title={t('chats.media.copyLink')}
+                  >
+                    {copiedLink[msg.id] === 'copied' ? <Check size={13} /> : <Copy size={13} />}
+                    {t(copiedLink[msg.id] === 'copied' ? 'chats.media.linkCopied' : 'chats.media.copyLink')}
+                  </button>
+                </div>
+              ) : null;
+
             switch (msg.type) {
               case 'image':
               case 'sticker':
@@ -241,12 +357,16 @@ function ChatThread({
                       onLoad={onMediaLoad}
                       onClick={() => onOpenImage(msg.id)}
                     />
+                    {downloadButton}
+                    {urlPanel}
                   </div>
                 );
               case 'video':
                 return (
                   <div className="message-media-video">
                     <video src={mediaSrc} controls className="chat-video-media" onLoadedData={onMediaLoad} />
+                    {downloadButton}
+                    {urlPanel}
                   </div>
                 );
               case 'audio':
@@ -254,15 +374,29 @@ function ChatThread({
                 return (
                   <div className="message-media-audio">
                     <audio src={mediaSrc} controls className="chat-audio-media" />
+                    {downloadButton}
+                    {urlPanel}
                   </div>
                 );
               case 'document':
               default:
                 return (
                   <div className="message-media-document">
-                    <a href={mediaSrc} download={mediaInfo.filename || 'document'} className="chat-document-media">
+                    <a
+                      href={mediaSrc}
+                      download={remoteSrc ? undefined : mediaInfo.filename || 'document'}
+                      target={remoteSrc ? '_blank' : undefined}
+                      rel={remoteSrc ? 'noopener noreferrer' : undefined}
+                      className="chat-document-media"
+                    >
                       📎 {mediaInfo.filename || t('chats.downloadDocument')}
                     </a>
+                    {remoteSrc && (
+                      <>
+                        {downloadButton}
+                        {urlPanel}
+                      </>
+                    )}
                   </div>
                 );
             }

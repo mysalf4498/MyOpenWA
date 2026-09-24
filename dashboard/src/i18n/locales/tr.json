@@ -68,12 +68,17 @@
   "chats": {
     "media": {
       "location": "Konum",
+      "openLocation": "Google Haritalar'da aç",
       "call": "Arama",
       "callMissed": "Cevapsız arama",
       "callVideo": "Görüntülü arama",
       "callVideoMissed": "Cevapsız görüntülü arama",
       "omitted": "Medya",
-      "image": "Görsel"
+      "image": "Görsel",
+      "download": "İndir",
+      "showLink": "Bağlantıyı göster",
+      "copyLink": "Bağlantıyı kopyala",
+      "linkCopied": "Bağlantı kopyalandı"
     },
     "subtitle": "WhatsApp mesajlarını gerçek zamanlı gönderin ve yanıtlayın",
     "noSessionsTitle": "Bağlı oturum yok",

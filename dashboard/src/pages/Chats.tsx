@@ -67,9 +67,11 @@ interface IncomingWsMessage {
   fromMe?: boolean;
   media?: MessageMedia;
   quotedMessage?: { id: string; body: string };
-  // The backend emits `call` as a top-level field on the live `message.received` event (it's only
-  // folded into `metadata` on the persisted/history path), so declare it here to carry it through.
+  // The backend emits `call`/`location` as top-level fields on the live `message.received` event
+  // (they're only folded into `metadata` on the persisted/history path), so declare them here to
+  // carry them through.
   call?: { video: boolean; missed: boolean };
+  location?: { latitude: number; longitude: number; description?: string; address?: string; url?: string };
   metadata?: ChatMessageView['metadata'];
   kind?: ChatKind;
   /** Group poster: `from` is the group JID, so `contact`/`author` identify who actually sent it. */
@@ -357,6 +359,7 @@ export function Chats() {
           media: newMsg.media,
           quotedMessage: newMsg.quotedMessage,
           call: newMsg.call,
+          location: newMsg.location,
         },
         kind: newMsg.kind,
       };

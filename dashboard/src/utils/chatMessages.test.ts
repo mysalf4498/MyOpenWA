@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  isRemoteMediaUrl,
   mapEngineHistoryMessage,
   mergeChatMessages,
   mergeReactionSnapshot,
@@ -70,6 +71,13 @@ test('mapEngineHistoryMessage: a media message that DID carry media keeps it (no
 
 test('mapEngineHistoryMessage: a text message gets no media metadata', () => {
   assert.equal(mapEngineHistoryMessage(hist({ type: 'text' })).metadata, undefined);
+});
+
+test('mapEngineHistoryMessage: a location message carries its coordinates into metadata', () => {
+  const m = mapEngineHistoryMessage(
+    hist({ type: 'location', location: { latitude: -6.2088, longitude: 106.8456, description: 'Monas' } }),
+  );
+  assert.deepEqual(m.metadata?.location, { latitude: -6.2088, longitude: 106.8456, description: 'Monas' });
 });
 
 test('mergeChatMessages: an engine-only message (no DB row) is included — the backfill case', () => {
@@ -190,6 +198,15 @@ test('mergeOrAppend: an echo with undefined leaves keeps the existing quote/call
   const echo = msg({ id: 'm-1', metadata: { media: undefined } });
   const after = mergeOrAppend(before, echo);
   assert.deepEqual(after[0].metadata, { quotedMessage: { id: 'q-1', body: 'quoted' } });
+});
+
+test('mergeOrAppend: an echo with undefined leaves keeps the existing location coordinates', () => {
+  const before = [
+    msg({ id: 'm-1', type: 'location', metadata: { location: { latitude: -6.2088, longitude: 106.8456 } } }),
+  ];
+  const echo = msg({ id: 'm-1', type: 'location', metadata: { location: undefined } });
+  const after = mergeOrAppend(before, echo);
+  assert.deepEqual(after[0].metadata, { location: { latitude: -6.2088, longitude: 106.8456 } });
 });
 
 test('mergeOrAppend dedupes a live WS message against its DB copy (id != id but same waMessageId)', () => {
@@ -416,4 +433,28 @@ test('mergeReactionSnapshot treats an EMPTY snapshot as an answer, not as absenc
 
 test('mergeReactionSnapshot stays undefined when neither side knows anything', () => {
   assert.equal(mergeReactionSnapshot(undefined, undefined), undefined);
+});
+
+test('isRemoteMediaUrl: an https source is remote', () => {
+  assert.equal(isRemoteMediaUrl('https://cdn.example.com/a.jpg?x=1'), true);
+});
+
+test('isRemoteMediaUrl: an http source is remote', () => {
+  assert.equal(isRemoteMediaUrl('http://10.0.0.5/file.bin'), true);
+});
+
+test('isRemoteMediaUrl: scheme case does not matter', () => {
+  assert.equal(isRemoteMediaUrl('HTTPS://cdn.example.com/v.mp4'), true);
+});
+
+test('isRemoteMediaUrl: inline data is not remote', () => {
+  assert.equal(isRemoteMediaUrl('data:image/jpeg;base64,/9j/4AAQSkZJRg'), false);
+});
+
+test('isRemoteMediaUrl: an empty src is not remote', () => {
+  assert.equal(isRemoteMediaUrl(''), false);
+});
+
+test('isRemoteMediaUrl: a bare-looking host is not a remote URL', () => {
+  assert.equal(isRemoteMediaUrl('cdn.example.com/a.jpg'), false);
 });

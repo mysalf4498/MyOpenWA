@@ -68,12 +68,17 @@
   "chats": {
     "media": {
       "location": "స్థానం",
+      "openLocation": "Google మ్యాప్స్లో తెరవండి",
       "call": "కాల్",
       "callMissed": "మిస్డ్ కాల్",
       "callVideo": "వీడియో కాల్",
       "callVideoMissed": "మిస్డ్ వీడియో కాల్",
       "omitted": "మీడియా",
-      "image": "చిత్రం"
+      "image": "చిత్రం",
+      "download": "డౌన్‌లోడ్",
+      "showLink": "లింక్ చూపించండి",
+      "copyLink": "లింక్ కాపీ చేయండి",
+      "linkCopied": "లింక్ కాపీ చేయబడింది"
     },
     "subtitle": "వాట్సాప్ సందేశాలను నిజ-సమయంలో పంపండి మరియు ప్రత్యుత్తరం ఇవ్వండి",
     "noSessionsTitle": "కనెక్ట్ అయిన సెషన్లు లేవు",

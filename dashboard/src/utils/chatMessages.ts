@@ -26,10 +26,12 @@ export function mapEngineHistoryMessage(h: EngineHistoryMessage): ChatMessage {
     timestamp: h.timestamp,
     createdAt: new Date((h.timestamp ?? 0) * 1000).toISOString(),
     metadata: h.media
-      ? { media: h.media }
+      ? { media: h.media, location: h.location }
       : HISTORY_MEDIA_TYPES.has(h.type)
-        ? { media: { mimetype: '', omitted: true } }
-        : undefined,
+        ? { media: { mimetype: '', omitted: true }, location: h.location }
+        : h.location
+          ? { location: h.location }
+          : undefined,
   };
 }
 
@@ -121,12 +123,18 @@ export const getMediaSrc = (media?: MessageMedia): string => {
   return `data:${media.mimetype};base64,${media.data}`;
 };
 
+// A src that points off-box. URL-based sends store the source URL in `media.data`, and a cross-origin
+// URL defeats the anchor `download` attribute — the browser navigates instead of saving. The thread
+// renders such bubbles with a revealable copy-link instead of pretending a file download happened.
+export const isRemoteMediaUrl = (src: string): boolean => /^https?:\/\//i.test(src);
+
 export interface ChatMessageView extends ChatMessage {
   metadata?: {
     media?: MessageMedia;
     quotedMessage?: { id: string; body: string };
     reactions?: Record<string, string>;
     call?: { video: boolean; missed: boolean };
+    location?: { latitude: number; longitude: number; description?: string; address?: string; url?: string };
   };
 }
 
@@ -195,6 +203,8 @@ function mergeMessageMetadata(
   if (reactions) merged.reactions = reactions;
   const call = incoming.call ?? existing.call;
   if (call) merged.call = call;
+  const location = incoming.location ?? existing.location;
+  if (location) merged.location = location;
   return Object.keys(merged).length > 0 ? merged : undefined;
 }
 

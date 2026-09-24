@@ -796,6 +796,13 @@ describe('MessageSendService', () => {
         'test@c.us',
         expect.objectContaining({ latitude: -6.2088, longitude: 106.8456 }),
       );
+      // The pending row must carry the coordinates so the dashboard can link the bubble to a map.
+      expect(repository.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'location',
+          metadata: { location: { latitude: -6.2088, longitude: 106.8456, description: 'Jakarta' } },
+        }),
+      );
     });
   });
 

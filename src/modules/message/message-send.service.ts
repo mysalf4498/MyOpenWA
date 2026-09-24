@@ -375,6 +375,16 @@ export class MessageSendService {
       body: `📍 ${finalDto.description || 'Location'}`,
       type: 'location',
       quotedMessageId: finalDto.quotedMessageId,
+      // Persist the coordinates so the dashboard can link the outgoing bubble to a map, the same way
+      // inbound location rows carry them via buildMessageMetadata.
+      metadata: {
+        location: {
+          latitude: finalDto.latitude,
+          longitude: finalDto.longitude,
+          ...(finalDto.description ? { description: finalDto.description } : {}),
+          ...(finalDto.address ? { address: finalDto.address } : {}),
+        },
+      },
     });
 
     let result: MessageResult;

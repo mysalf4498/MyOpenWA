@@ -94,6 +94,30 @@ const OMITTED_MEDIA_MESSAGE_2: ChatMessage = {
   metadata: { media: { mimetype: 'image/jpeg', filename: 'photo-2.jpg', omitted: true, sizeBytes: 9_000_000 } },
 };
 
+// A URL-based send: the engine stored the source URL rather than uploading bytes, so the media src
+// points off-box. A cross-origin URL defeats the anchor `download` attribute (the browser navigates
+// instead of saving), so this bubble must offer the URL as copyable text, not a fake file download.
+const REMOTE_MEDIA_MESSAGE: ChatMessage = {
+  id: 'db-4',
+  waMessageId: 'wamid.4',
+  chatId: CHAT.id,
+  from: CHAT.id,
+  to: 'me',
+  body: '',
+  type: 'image',
+  direction: 'incoming',
+  status: 'delivered',
+  timestamp: 1_700_000_003,
+  createdAt: new Date(1_700_000_003_000).toISOString(),
+  metadata: {
+    media: {
+      mimetype: 'image/jpeg',
+      filename: 'photo-remote.jpg',
+      data: 'https://cdn.example.com/photo-remote.jpg',
+    },
+  },
+};
+
 /** The per-message media route the omitted marker sends the viewer to. */
 const mediaPathFor = (waMessageId: string): string =>
   `/api/sessions/${SESSION.id}/messages/${encodeURIComponent(CHAT.id)}/${encodeURIComponent(waMessageId)}/media`;
@@ -187,7 +211,10 @@ function installFetchStub(): void {
     }
     if (method === 'GET' && path.startsWith(`/api/sessions/${SESSION.id}/messages?`)) {
       return Promise.resolve(
-        jsonResponse({ messages: [DB_MESSAGE, OMITTED_MEDIA_MESSAGE, OMITTED_MEDIA_MESSAGE_2], total: 3 }),
+        jsonResponse({
+          messages: [DB_MESSAGE, OMITTED_MEDIA_MESSAGE, OMITTED_MEDIA_MESSAGE_2, REMOTE_MEDIA_MESSAGE],
+          total: 4,
+        }),
       );
     }
     // The media route answers bytes, not JSON — Content-Disposition: attachment.
@@ -525,4 +552,53 @@ test('two media downloads in flight do not clobber each other', async () => {
     true,
     "B's download was still open — A settling must not re-enable it",
   );
+});
+
+/**
+ * A URL-based send stores the source URL in `media.data`. The anchor `download` attribute is ignored
+ * for a cross-origin URL — before this the download button handed the whole dashboard over to the
+ * remote host. The bubble must instead reveal the URL as copyable text and confirm the copy.
+ */
+test('a remote-URL media bubble reveals the link as text instead of attempting a download', async () => {
+  const { screen, fireEvent, within } = rtl;
+  resetFetchCalls();
+
+  // jsdom does not implement execCommand at all, so the clipboard's legacy fallback would throw (and
+  // the copy would report failure). Install a stub that records the copied value and restore after.
+  const originalExecCommand = document.execCommand;
+  let copiedText = '';
+  document.execCommand = (command: string): boolean => {
+    if (command === 'copy') {
+      copiedText = document.querySelector('textarea')?.value ?? '';
+    }
+    return true;
+  };
+
+  try {
+    const { container } = renderChats();
+    fireEvent.click(await screen.findByText('Alice'));
+    const thread = container.querySelector('.room-messages') as HTMLElement;
+    // Wait for the message list to render the media bubbles before addressing the remote row — the
+    // fetch for the messages list resolves async, so the row can lag the chat header.
+    await within(thread).findAllByRole('button', { name: /Show link|Media/ });
+    const bubble = thread.querySelector(`[data-wa-message-id="${REMOTE_MEDIA_MESSAGE.waMessageId}"]`) as HTMLElement;
+
+    // No omitted marker, no route fetch: the reveal toggle is the whole story.
+    const mediaPath = mediaPathFor(REMOTE_MEDIA_MESSAGE.waMessageId as string);
+    assert.equal(countFetchCalls('GET', mediaPath), 0, 'no media route hit before asking');
+
+    fireEvent.click(bubble.querySelector('.chat-media-download') as HTMLButtonElement);
+
+    const urlCode = bubble.querySelector('.chat-media-url-code') as HTMLElement;
+    assert.ok(urlCode, 'clicking the button must reveal the URL panel');
+    assert.equal(urlCode.textContent, 'https://cdn.example.com/photo-remote.jpg');
+
+    fireEvent.click(bubble.querySelector('.chat-media-copy-link') as HTMLButtonElement);
+    await within(bubble).findByText('Link copied');
+    assert.equal(copiedText, 'https://cdn.example.com/photo-remote.jpg');
+
+    assert.equal(countFetchCalls('GET', mediaPath), 0, 'revealing the link must not fetch media');
+  } finally {
+    document.execCommand = originalExecCommand;
+  }
 });

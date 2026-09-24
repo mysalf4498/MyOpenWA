@@ -68,12 +68,17 @@
   "chats": {
     "media": {
       "location": "מיקום",
+      "openLocation": "פתח ב-Google Maps",
       "call": "שיחה",
       "callMissed": "שיחה שלא נענתה",
       "callVideo": "שיחת וידאו",
       "callVideoMissed": "שיחת וידאו שלא נענתה",
       "omitted": "מדיה",
-      "image": "תמונה"
+      "image": "תמונה",
+      "download": "הורדה",
+      "showLink": "הצג קישור",
+      "copyLink": "העתק קישור",
+      "linkCopied": "הקישור הועתק"
     },
     "subtitle": "שליחה ומענה להודעות WhatsApp בזמן אמת",
     "noSessionsTitle": "אין סשנים מחוברים",

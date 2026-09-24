@@ -26,6 +26,12 @@ describe('buildMessageMetadata', () => {
     expect(buildMessageMetadata(msg({ call }))).toEqual({ call });
   });
 
+  it('stores location coordinates', () => {
+    const location = { latitude: -6.2088, longitude: 106.8456, description: 'Monas', address: 'Jakarta' };
+
+    expect(buildMessageMetadata(msg({ location }))).toEqual({ location });
+  });
+
   it('stores every present field together', () => {
     const built = buildMessageMetadata(
       msg({
@@ -33,10 +39,11 @@ describe('buildMessageMetadata', () => {
         media: { mimetype: 'image/png' },
         quotedMessage: { id: 'q' },
         call: { video: false, missed: false },
+        location: { latitude: -6.2, longitude: 106.8 },
       } as Partial<IncomingMessage>),
     );
 
-    expect(Object.keys(built!).sort()).toEqual(['call', 'media', 'quotedMessage']);
+    expect(Object.keys(built!).sort()).toEqual(['call', 'location', 'media', 'quotedMessage']);
   });
 
   describe('omitted-media synthesis', () => {
