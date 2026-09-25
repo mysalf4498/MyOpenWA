@@ -25,6 +25,7 @@ function makeRoot({
   statusPatcher = false,
   readySyncPatcher = false,
   participantArityPatcher = false,
+  mediaIdPatcher = false,
   baileysPatcher = false,
   baileysNewsletterPatcher = false,
 } = {}) {
@@ -36,6 +37,7 @@ function makeRoot({
     statusPatcher ||
     readySyncPatcher ||
     participantArityPatcher ||
+    mediaIdPatcher ||
     baileysPatcher ||
     baileysNewsletterPatcher
   ) {
@@ -55,6 +57,9 @@ function makeRoot({
   }
   if (participantArityPatcher) {
     fs.writeFileSync(path.join(root, 'scripts', 'patch-wwebjs-participant-arity.js'), '// stub\n');
+  }
+  if (mediaIdPatcher) {
+    fs.writeFileSync(path.join(root, 'scripts', 'patch-wwebjs-media-id.js'), '// stub\n');
   }
   if (baileysPatcher) {
     fs.writeFileSync(path.join(root, 'scripts', 'patch-baileys-appstate.js'), '// stub\n');
@@ -137,6 +142,14 @@ test('planSteps: participant-arity patcher plans its own best-effort repair', ()
   assert.deepEqual(steps[0].args.slice(1), ['--best-effort']);
 });
 
+test('planSteps: media-id patcher plans its own best-effort repair', () => {
+  const steps = planSteps(makeRoot({ mediaIdPatcher: true }));
+  assert.equal(steps.length, 1);
+  assert.equal(steps[0].command, process.execPath);
+  assert.match(steps[0].args[0], /patch-wwebjs-media-id\.js$/);
+  assert.deepEqual(steps[0].args.slice(1), ['--best-effort']);
+});
+
 test('planSteps: dashboard and all patchers run in stable order', () => {
   const steps = planSteps(
     makeRoot({
@@ -146,21 +159,23 @@ test('planSteps: dashboard and all patchers run in stable order', () => {
       statusPatcher: true,
       readySyncPatcher: true,
       participantArityPatcher: true,
+      mediaIdPatcher: true,
       baileysPatcher: true,
       baileysNewsletterPatcher: true,
     }),
   );
   // One assertion per patcher on disk: the test is named for ALL of them, so a patcher that is
   // planned but never named here would leave the claim false while the suite stayed green.
-  assert.equal(steps.length, 8);
+  assert.equal(steps.length, 9);
   assert.equal(steps[0].command, 'npm ci');
   assert.match(steps[1].args[0], /patch-wwebjs-201832\.js$/);
   assert.match(steps[2].args[0], /patch-wwebjs-newsletter-preview\.js$/);
   assert.match(steps[3].args[0], /patch-wwebjs-status\.js$/);
   assert.match(steps[4].args[0], /patch-wwebjs-ready-sync\.js$/);
   assert.match(steps[5].args[0], /patch-wwebjs-participant-arity\.js$/);
-  assert.match(steps[6].args[0], /patch-baileys-appstate\.js$/);
-  assert.match(steps[7].args[0], /patch-baileys-newsletter-create\.js$/);
+  assert.match(steps[6].args[0], /patch-wwebjs-media-id\.js$/);
+  assert.match(steps[7].args[0], /patch-baileys-appstate\.js$/);
+  assert.match(steps[8].args[0], /patch-baileys-newsletter-create\.js$/);
 });
 
 test('run: nothing to do exits 0 and never spawns', () => {

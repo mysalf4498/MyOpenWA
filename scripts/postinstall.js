@@ -25,11 +25,13 @@
  *      participant writes report which requested ids resolved to members, gated the same way.
  *   7. `node scripts/patch-wwebjs-block.js --best-effort` when present, restoring block and
  *      unblock after WhatsApp Web removed the contact resolver they used.
- *   8. `node scripts/patch-baileys-appstate.js --best-effort` when present, the app-state resync
+ *   8. `node scripts/patch-wwebjs-media-id.js --best-effort` when present, stripping the media
+ *      model's private id from the outgoing message so media sends work again, gated the same way.
+ *   9. `node scripts/patch-baileys-appstate.js --best-effort` when present, the app-state resync
  *      bound, gated the same way.
- *   9. `node scripts/patch-baileys-newsletter-create.js --best-effort` when present, the
- *      newsletter-create parse fix. Steps 7-8 are the Baileys patches, so a Baileys-only install
- *      runs those and skips 2-6.
+ *  10. `node scripts/patch-baileys-newsletter-create.js --best-effort` when present, the
+ *      newsletter-create parse fix. Steps 9-10 are the Baileys patches, so a Baileys-only install
+ *      runs those and skips 2-8.
  *
  * Structured like scripts/patch-wwebjs-201832.js: pure planning + injectable spawn, so the spec
  * (scripts/postinstall.spec.js, node:test) exercises every branch without a real npm run.
@@ -124,6 +126,15 @@ function planSteps(root, env = process.env) {
       name: 'whatsapp-web.js block/unblock LID repair (scripts/patch-wwebjs-block.js --best-effort)',
       command: process.execPath,
       args: [blockPatcher, '--best-effort'],
+      options: { stdio: 'inherit', cwd: root, env: cleanEnv },
+    });
+  }
+  const mediaIdPatcher = path.join(root, 'scripts', 'patch-wwebjs-media-id.js');
+  if (fs.existsSync(mediaIdPatcher)) {
+    steps.push({
+      name: 'whatsapp-web.js media send repair (scripts/patch-wwebjs-media-id.js --best-effort)',
+      command: process.execPath,
+      args: [mediaIdPatcher, '--best-effort'],
       options: { stdio: 'inherit', cwd: root, env: cleanEnv },
     });
   }

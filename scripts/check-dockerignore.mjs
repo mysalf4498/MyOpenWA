@@ -146,6 +146,7 @@ const mustKeep = [
   'scripts/patch-wwebjs-newsletter-preview.js',
   'scripts/patch-wwebjs-status.js',
   'scripts/patch-wwebjs-ready-sync.js',
+  'scripts/patch-wwebjs-media-id.js',
   'scripts/wwebjs-201832.patch',
   'scripts/pgdg-ACCC4CF8.asc',
   'scripts/backup.sh',
